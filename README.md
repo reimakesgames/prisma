@@ -1,2 +1,2 @@
 # Prisma
-A Visual Character System
+A Flexible Visual Character System that can be Integrated in any Framework
