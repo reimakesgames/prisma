@@ -1,3 +1,4 @@
 {
-	"robloxLsp.workspace.rojoProjectFile": "test"
+	"robloxLsp.workspace.rojoProjectFile": "test",
+	"robloxOutputSync.startAutomatically": true
 }
