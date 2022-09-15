@@ -8,13 +8,17 @@ local Link = require(Packages.link)
 
 local HeadFragment = require(script.Head)
 local TorsoFragment = require(script.Torso)
+local ArmFragment = require(script.Arm)
 
 local ToServer, ToClient
 
 local PlayerCameraCFrames: { [Player]: CFrame } = {}
+local PlayerArmStates: { [Player]: Array<boolean> } = {}
 
 local Prisma = {
-	MouseTracking = false
+	MouseTracking = false;
+	LeftArmEnabled = false;
+	RightArmEnabled = false;
 }
 
 local function IsCharacterAlive(Player: Player)
@@ -51,7 +55,7 @@ local function ConvertToMouseDirection()
 	return Head.CFrame
 end
 
-local function RenderEverything(deltaTime, Player, CameraCFrame)
+local function RenderEverything(deltaTime, Player, CameraCFrame, ArmStates: Array<boolean>)
 	-- Add checks here so fragments have 0 boilerplate
 	if Player.Parent == nil then
 		PlayerCameraCFrames[Player] = nil
@@ -78,6 +82,7 @@ local function RenderEverything(deltaTime, Player, CameraCFrame)
 
 	HeadFragment(Player.Character, RelativeCameraDirection)
 	TorsoFragment(deltaTime, Player.Character, RelativeCameraDirection)
+	ArmFragment(ArmStates, Player, RelativeCameraDirection)
 
 	return true
 end
@@ -89,22 +94,25 @@ local function Render(deltaTime)
 		LocalCameraCFrame = CFrame.lookAt(HeadCFrame.Position, Players.LocalPlayer:GetMouse().Hit.Position)
 	end
 
-	RenderEverything(deltaTime, Players.LocalPlayer, LocalCameraCFrame)
-	ToServer:FireServer(LocalCameraCFrame)
+	local MyArmStates = {Prisma.LeftArmEnabled, Prisma.RightArmEnabled}
+
+	RenderEverything(deltaTime, Players.LocalPlayer, LocalCameraCFrame, MyArmStates)
+	ToServer:FireServer(LocalCameraCFrame, MyArmStates)
 
 	for Player, CameraCFrame in PlayerCameraCFrames do
-		if not RenderEverything(deltaTime, Player, CameraCFrame) then
+		if not RenderEverything(deltaTime, Player, CameraCFrame, PlayerArmStates[Player]) then
 			continue
 		end
 	end
 end
 
-local function ClientRecieve(Player: Player, CameraCFrame: CFrame)
+local function ClientRecieve(Player: Player, CameraCFrame: CFrame, ArmStates: Array<boolean>)
 	PlayerCameraCFrames[Player] = CameraCFrame
+	PlayerArmStates[Player] = ArmStates
 end
 
-local function ServerRecieve(Player: Player, CameraCFrame: CFrame)
-	ToClient:FireSelectedClients({Player}, false, Player, CameraCFrame)
+local function ServerRecieve(Player: Player, CameraCFrame: CFrame, ArmStates: Array<boolean>)
+	ToClient:FireSelectedClients({Player}, false, Player, CameraCFrame, ArmStates)
 end
 
 if RunService:IsServer() then
@@ -120,6 +128,19 @@ end
 
 function Prisma.EnableMouseTracking(bool: boolean)
 	Prisma.MouseTracking = bool
+end
+
+function Prisma.EnableArms(Left: boolean, Right: boolean)
+	Prisma.LeftArmEnabled = Left
+	Prisma.RightArmEnabled = Right
+end
+
+function Prisma.EnableLeftArm(Enabled: boolean)
+	Prisma.LeftArmEnabled = Enabled
+end
+
+function Prisma.EnableRightArm(Enabled: boolean)
+	Prisma.RightArmEnabled = Enabled
 end
 
 return Prisma
