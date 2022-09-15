@@ -6,8 +6,8 @@ local LocalPlayer = Players.LocalPlayer
 local Packages = script.Parent
 local Link = require(Packages.link)
 
-local TorsoLagVector = Instance.new("NumberValue", script)
-local TorsoLagVector2 = Instance.new("NumberValue", script)
+local HeadFragment = require(script.Head)
+local TorsoFragment = require(script.Torso)
 
 local ToServer, ToClient
 
@@ -16,10 +16,6 @@ local PlayerCameraCFrames: { [Player]: CFrame } = {}
 local Prisma = {
 	MouseTracking = false
 }
-
-local function LinearInterpolate(x: number, y: number, alpha: number)
-	return x * (1 - alpha) + y * alpha
-end
 
 local function IsCharacterAlive(Player: Player)
 	local Character = Player.Character
@@ -40,7 +36,23 @@ local function IsCharacterAlive(Player: Player)
 	return true
 end
 
-local function RenderNeck(delta, Player, CameraCFrame)
+local function ConvertToMouseDirection()
+	if not IsCharacterAlive(LocalPlayer) then
+		return CFrame.new()
+	end
+
+	local Character = LocalPlayer.Character
+
+	local Head = Character:FindFirstChild("Head")
+	if not Head then
+		return CFrame.new()
+	end
+
+	return Head.CFrame
+end
+
+local function RenderEverything(deltaTime, Player, CameraCFrame)
+	-- Add checks here so fragments have 0 boilerplate
 	if Player.Parent == nil then
 		PlayerCameraCFrames[Player] = nil
 		return false
@@ -57,76 +69,31 @@ local function RenderNeck(delta, Player, CameraCFrame)
 		return false
 	end
 
-	local Torso = Character:FindFirstChild("Torso")
-	if not Torso then
+	if not Character:FindFirstChild("Torso") or not Character.Torso:FindFirstChild("Neck") then
 		return false
 	end
 
-	local NeckJoint = Torso:FindFirstChild("Neck")
-	if not NeckJoint then
-		return false
-	end
-
+	-- Runs everything and the required variables
 	local RelativeCameraDirection = HumanoidRootPart.CFrame:ToObjectSpace(CameraCFrame).LookVector
 
-	if LocalPlayer == Player then
-		Player.Character.Humanoid.AutoRotate = false
-		-- X axis relative camera direction
-		-- Y axis for humanoid root part rotation
-		-- Positive rotates it counter clockwise (for some reason)
-		-- print((math.floor((RelativeCameraDirection.X) * 100)) * 0.01)
-		if RelativeCameraDirection.X >= 0.8 then
-			TorsoLagVector.Value = LinearInterpolate(TorsoLagVector.Value, 10 * -RelativeCameraDirection.X, 0.4 * (delta * 60))
-		elseif RelativeCameraDirection.X <= -0.8 then
-			TorsoLagVector.Value = LinearInterpolate(TorsoLagVector.Value, 10 * -RelativeCameraDirection.X, 0.4 * (delta * 60))
-		elseif RelativeCameraDirection.X < 0.5 and RelativeCameraDirection.X > -0.5 then
-			TorsoLagVector.Value = LinearInterpolate(TorsoLagVector.Value, 0, 0.4 * (delta * 60))
-		end
-		TorsoLagVector2.Value = LinearInterpolate(TorsoLagVector2.Value, TorsoLagVector.Value, 0.9 * (delta * 60))
+	HeadFragment(Player.Character, RelativeCameraDirection)
+	TorsoFragment(deltaTime, Player.Character, RelativeCameraDirection)
 
-		HumanoidRootPart.CFrame = HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(TorsoLagVector2.Value), 0)
-	end
-
-	-- TweenService:Create(NeckJoint, TweenInfo.new(0.1, Enum.EasingStyle.Cubic), {
-		-- C0 = CFrame.new(0, 1, 0)
-		-- * CFrame.Angles(3 * math.pi / 2, 0, math.pi)
-		-- * CFrame.Angles(0, 0, -math.asin(RelativeCameraDirection.x))
-		-- * CFrame.Angles(-math.asin(RelativeCameraDirection.y), 0, 0)
-	-- }):Play()
-	NeckJoint.C0 = CFrame.new(0, 1, 0)
-		* CFrame.Angles(3 * math.pi / 2, 0, math.pi)
-		* CFrame.Angles(0, 0, -math.asin(RelativeCameraDirection.x))
-		* CFrame.Angles(-math.asin(RelativeCameraDirection.y), 0, 0)
 	return true
 end
 
-local function ConvertToMouseDirection()
-	if not IsCharacterAlive(Players.LocalPlayer) then
-		return CFrame.new()
-	end
-
-	local Character = Players.LocalPlayer.Character
-
-	local Head = Character:FindFirstChild("Head")
-	if not Head then
-		return CFrame.new()
-	end
-
-	return Head.CFrame
-end
-
-local function Render(delta)
+local function Render(deltaTime)
 	local LocalCameraCFrame = workspace.CurrentCamera.CFrame
 	if Prisma.MouseTracking then
 		local HeadCFrame = ConvertToMouseDirection()
 		LocalCameraCFrame = CFrame.lookAt(HeadCFrame.Position, Players.LocalPlayer:GetMouse().Hit.Position)
 	end
 
-	RenderNeck(delta, Players.LocalPlayer, LocalCameraCFrame)
+	RenderEverything(deltaTime, Players.LocalPlayer, LocalCameraCFrame)
 	ToServer:FireServer(LocalCameraCFrame)
 
 	for Player, CameraCFrame in PlayerCameraCFrames do
-		if not RenderNeck(delta, Player, CameraCFrame) then
+		if not RenderEverything(deltaTime, Player, CameraCFrame) then
 			continue
 		end
 	end
