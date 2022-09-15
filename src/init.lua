@@ -13,6 +13,10 @@ local ToServer, ToClient
 
 local PlayerCameraCFrames: { [Player]: CFrame } = {}
 
+local Prisma = {
+	MouseTracking = false
+}
+
 local function LinearInterpolate(x: number, y: number, alpha: number)
 	return x * (1 - alpha) + y * alpha
 end
@@ -96,29 +100,27 @@ local function RenderNeck(delta, Player, CameraCFrame)
 	return true
 end
 
--- TODO implement this as a toggleable
--- this function is here because this is the test for the mouse looking function.
--- its currently unimplemented because of networking jank
+local function ConvertToMouseDirection()
+	if not IsCharacterAlive(Players.LocalPlayer) then
+		return CFrame.new()
+	end
 
--- local function Test()
--- 	if not IsCharacterAlive(Players.LocalPlayer) then
--- 		return CFrame.new()
--- 	end
+	local Character = Players.LocalPlayer.Character
 
--- 	local Character = Players.LocalPlayer.Character
+	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+	if not HumanoidRootPart then
+		return CFrame.new()
+	end
 
--- 	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
--- 	if not HumanoidRootPart then
--- 		return CFrame.new()
--- 	end
-
--- 	return HumanoidRootPart.CFrame
--- end
+	return HumanoidRootPart.CFrame
+end
 
 local function Render(delta)
 	local LocalCameraCFrame = workspace.CurrentCamera.CFrame
-	-- local HumanoidRootPartCFrame = Test()
-	-- LocalCameraCFrame = CFrame.lookAt(HumanoidRootPartCFrame.Position, Players.LocalPlayer:GetMouse().Hit.Position)
+	if Prisma.MouseTracking then
+		local HumanoidRootPartCFrame = ConvertToMouseDirection()
+		LocalCameraCFrame = CFrame.lookAt(HumanoidRootPartCFrame.Position, Players.LocalPlayer:GetMouse().Hit.Position)
+	end
 
 	RenderNeck(delta, Players.LocalPlayer, LocalCameraCFrame)
 	ToServer:FireServer(LocalCameraCFrame)
@@ -149,7 +151,8 @@ elseif RunService:IsClient() then
 	RunService:BindToRenderStep("PRISMA_main", Enum.RenderPriority.Last.Value + 50, Render)
 end
 
-
-local Prisma = {}
+function Prisma.EnableMouseTracking(bool: boolean)
+	Prisma.MouseTracking = bool
+end
 
 return Prisma
