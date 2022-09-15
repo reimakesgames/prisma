@@ -107,19 +107,19 @@ local function ConvertToMouseDirection()
 
 	local Character = Players.LocalPlayer.Character
 
-	local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
-	if not HumanoidRootPart then
+	local Head = Character:FindFirstChild("Head")
+	if not Head then
 		return CFrame.new()
 	end
 
-	return HumanoidRootPart.CFrame
+	return Head.CFrame
 end
 
 local function Render(delta)
 	local LocalCameraCFrame = workspace.CurrentCamera.CFrame
 	if Prisma.MouseTracking then
-		local HumanoidRootPartCFrame = ConvertToMouseDirection()
-		LocalCameraCFrame = CFrame.lookAt(HumanoidRootPartCFrame.Position, Players.LocalPlayer:GetMouse().Hit.Position)
+		local HeadCFrame = ConvertToMouseDirection()
+		LocalCameraCFrame = CFrame.lookAt(HeadCFrame.Position, Players.LocalPlayer:GetMouse().Hit.Position)
 	end
 
 	RenderNeck(delta, Players.LocalPlayer, LocalCameraCFrame)
