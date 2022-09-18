@@ -19,6 +19,7 @@ local Prisma = {
 	MouseTracking = false;
 	LeftArmEnabled = false;
 	RightArmEnabled = false;
+	TorsoLagEnabled = true;
 }
 
 local function IsCharacterAlive(Player: Player)
@@ -86,7 +87,7 @@ local function RenderEverything(deltaTime, Player, CameraCFrame, ArmStates: Arra
 	ArmFragment(ArmStates, Player, RelativeCameraDirection)
 
 	if Player == LocalPlayer then
-		TorsoFragment(deltaTime, Player.Character, RelativeCameraDirection, RelativeMovementDirection, DotOfCameraAndRoot)
+		TorsoFragment(deltaTime, Player.Character, Prisma.TorsoLagEnabled, RelativeCameraDirection, RelativeMovementDirection, DotOfCameraAndRoot)
 	end
 
 	return true
@@ -146,6 +147,10 @@ end
 
 function Prisma.EnableRightArm(Enabled: boolean)
 	Prisma.RightArmEnabled = Enabled
+end
+
+function Prisma.EnableTorsoLag(Enabled: boolean)
+	Prisma.TorsoLagEnabled = Enabled
 end
 
 return Prisma
