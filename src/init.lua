@@ -79,10 +79,15 @@ local function RenderEverything(deltaTime, Player, CameraCFrame, ArmStates: Arra
 
 	-- Runs everything and the required variables
 	local RelativeCameraDirection = HumanoidRootPart.CFrame:ToObjectSpace(CameraCFrame).LookVector
+	local RelativeMovementDirection = Character.HumanoidRootPart.CFrame:ToObjectSpace(CFrame.new(Character.HumanoidRootPart.CFrame.Position + Character.Humanoid.MoveDirection))
+	local DotOfCameraAndRoot = CameraCFrame.LookVector:Dot(HumanoidRootPart.CFrame.LookVector)
 
 	HeadFragment(Player.Character, RelativeCameraDirection)
-	TorsoFragment(deltaTime, Player.Character, RelativeCameraDirection)
 	ArmFragment(ArmStates, Player, RelativeCameraDirection)
+
+	if Player == LocalPlayer then
+		TorsoFragment(deltaTime, Player.Character, RelativeCameraDirection, RelativeMovementDirection, DotOfCameraAndRoot)
+	end
 
 	return true
 end
