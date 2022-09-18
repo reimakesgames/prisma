@@ -132,24 +132,24 @@ elseif RunService:IsClient() then
 	RunService:BindToRenderStep("PRISMA_main", Enum.RenderPriority.Last.Value + 50, Render)
 end
 
-function Prisma.EnableMouseTracking(bool: boolean)
+function Prisma:ToggleMouseTracking(bool: boolean)
 	Prisma.MouseTracking = bool
 end
 
-function Prisma.EnableArms(Left: boolean, Right: boolean)
+function Prisma:ToggleArms(Left: boolean, Right: boolean)
 	Prisma.LeftArmEnabled = Left
 	Prisma.RightArmEnabled = Right
 end
 
-function Prisma.EnableLeftArm(Enabled: boolean)
+function Prisma:ToggleLeftArm(Enabled: boolean)
 	Prisma.LeftArmEnabled = Enabled
 end
 
-function Prisma.EnableRightArm(Enabled: boolean)
+function Prisma:ToggleRightArm(Enabled: boolean)
 	Prisma.RightArmEnabled = Enabled
 end
 
-function Prisma.EnableTorsoLag(Enabled: boolean)
+function Prisma:ToggleTorsoLag(Enabled: boolean)
 	Prisma.TorsoLagEnabled = Enabled
 end
 
