@@ -53,6 +53,8 @@ return function(delta, Character, EnableTorsoLag, RelativeCameraDirection, Relat
 	else
 		-- VT = LinearInterpolate(VT, 10 * RelativeCameraDirection.X, 0.4 * (delta * 60))
 		-- * this is literally the only thing i know to make it work, sorry guys lol
+		VT = LinearInterpolate(VT, 0, 0.4 * (delta * 60))
+		VectorTwo = LinearInterpolate(VectorTwo, 0, 0.9 * (delta * 60))
 		Character.Humanoid.AutoRotate = true
 	end
 

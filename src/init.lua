@@ -9,6 +9,7 @@ local Link = require(Packages.link)
 local HeadFragment = require(script.Head)
 local TorsoFragment = require(script.Torso)
 local ArmFragment = require(script.Arm)
+local LegFragment = require(script.Leg)
 
 local ToServer, ToClient
 
@@ -20,6 +21,7 @@ local Prisma = {
 	LeftArmEnabled = false;
 	RightArmEnabled = false;
 	TorsoLagEnabled = true;
+	LegRotationEnabled = true;
 }
 
 local function IsCharacterAlive(Player: Player)
@@ -78,6 +80,10 @@ local function RenderEverything(deltaTime, Player, CameraCFrame, ArmStates: Arra
 		return false
 	end
 
+	if not Character.Torso:FindFirstChild("Left Hip") or not Character.Torso:FindFirstChild("Right Hip") then
+		return false
+	end
+
 	-- Runs everything and the required variables
 	local RelativeCameraDirection = HumanoidRootPart.CFrame:ToObjectSpace(CameraCFrame).LookVector
 	local RelativeMovementDirection = Character.HumanoidRootPart.CFrame:ToObjectSpace(CFrame.new(Character.HumanoidRootPart.CFrame.Position + Character.Humanoid.MoveDirection))
@@ -85,6 +91,7 @@ local function RenderEverything(deltaTime, Player, CameraCFrame, ArmStates: Arra
 
 	HeadFragment(Player.Character, RelativeCameraDirection)
 	ArmFragment(ArmStates, Player, RelativeCameraDirection)
+	LegFragment(Character, Prisma.LegRotationEnabled, RelativeMovementDirection)
 
 	if Player == LocalPlayer then
 		TorsoFragment(deltaTime, Player.Character, Prisma.TorsoLagEnabled, RelativeCameraDirection, RelativeMovementDirection, DotOfCameraAndRoot)
@@ -151,6 +158,10 @@ end
 
 function Prisma:ToggleTorsoLag(Enabled: boolean)
 	Prisma.TorsoLagEnabled = Enabled
+end
+
+function Prisma:ToggleLegRotation(Enabled: boolean)
+	Prisma.LegRotationEnabled = Enabled
 end
 
 return Prisma
