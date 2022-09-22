@@ -9,12 +9,29 @@ It supports visuals and physics similar to Minecraft and Quake Engine respective
 * Head Facing Mouse or Camera
 * Arm following Mouse or Camera while tool is equipped
 * Torso lag (Minecraft like)
-* Acceleration and Deceleration
-* Bunny hopping
-* Fall Damage
+* Acceleration and Deceleration (TBA)
+* Bunny hopping (TBA)
+* Fall Damage (TBA)
 
 # API
-None yet (lol)
+## Client Functions
+**:ToggleMouseTracking(Enabled: *boolean*)**
+
+If set to true, the head and other moving limbs follow the mouse instead of the camera.
+
+---
+
+**:ToggleTorsoLag(Enabled: *boolean*)**
+
+If set to true, disables Humanoid.AutoRotate and enables the torso movement thing. (I don't know what it's called)
+<br>Else, it reenables AutoRotate, skipping all calculations.
+
+---
+
+**:ToggleArms(Left: *boolean*, Right: *boolean*)**
+**:ToggleLeftArm(Enabled: *boolean*)** or **:ToggleRightArm(Enabled: *boolean*)**
+
+Enables respective arms
 
 # Credits
 Authored/Co-Authored by: [Me](https://github.com/reimakesgames/) and [Synthranger_](https://github.com/synthranger/)
