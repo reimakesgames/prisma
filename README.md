@@ -29,9 +29,15 @@ If set to true, disables Humanoid.AutoRotate and enables the torso movement thin
 ---
 
 **:ToggleArms(Left: *boolean*, Right: *boolean*)**
-**:ToggleLeftArm(Enabled: *boolean*)** or **:ToggleRightArm(Enabled: *boolean*)**
+<br>**:ToggleLeftArm(Enabled: *boolean*)** or **:ToggleRightArm(Enabled: *boolean*)**
 
 Enables respective arms
+
+---
+
+**:ToggleLegRotation(Enabled: *boolean*)**
+
+Toggle for leg rotation for a pseudo-footplanting function
 
 # Credits
 Authored/Co-Authored by: [Me](https://github.com/reimakesgames/) and [Synthranger_](https://github.com/synthranger/)
