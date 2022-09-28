@@ -1,6 +1,4 @@
-local function LinearInterpolate(x: number, y: number, alpha: number)
-	return x * (1 - alpha) + y * alpha
-end
+local LerpTools = require(script.Parent:WaitForChild("LerpTools"))
 
 local VectorOne = 0
 local VectorTwo = 0
@@ -10,6 +8,7 @@ local VT = 0
 -- local VTT = 0
 
 return function(delta, Character, EnableTorsoLag, RelativeCameraDirection, RelativeMovementDirection, DotOfCameraAndRoot)
+	LerpTools.DeltaTime = delta
 	Character.Humanoid.AutoRotate = false
 	-- X axis relative camera direction
 	-- Y axis for humanoid root part rotation
@@ -19,11 +18,11 @@ return function(delta, Character, EnableTorsoLag, RelativeCameraDirection, Relat
 	if EnableTorsoLag then
 		if Character.Humanoid.MoveDirection.Magnitude >= 0.5 then
 			if RelativeMovementDirection.X >= 0.3 then
-				VO = LinearInterpolate(VO, 10 * -RelativeMovementDirection.X, 0.3 * (delta * 60))
+				VO = LerpTools:LinearInterpolate(VO, 10 * -RelativeMovementDirection.X, 80)
 			elseif RelativeMovementDirection.X <= -0.3 then
-				VO = LinearInterpolate(VO, 10 * -RelativeMovementDirection.X, 0.3 * (delta * 60))
+				VO = LerpTools:LinearInterpolate(VO, 10 * -RelativeMovementDirection.X, 80)
 			else
-				VO = LinearInterpolate(VO, 10 * -RelativeCameraDirection.X, 0.3 * (delta * 60))
+				VO = LerpTools:LinearInterpolate(VO, 10 * -RelativeCameraDirection.X, 80)
 			end
 
 			-- * This was originally used to check if player was moving backwards
@@ -33,28 +32,28 @@ return function(delta, Character, EnableTorsoLag, RelativeCameraDirection, Relat
 			-- end
 
 			if DotOfCameraAndRoot <= 0.5 then
-				VT = LinearInterpolate(VT, VO * 0.75, 0.4 * (delta * 60))
+				VT = LerpTools:LinearInterpolate(VT, VO * 0.75, 24)
 			else
-				VT = LinearInterpolate(VT, VO, 0.9 * (delta * 60))
+				VT = LerpTools:LinearInterpolate(VT, VO, 48)
 			end
 		else
-			VT = LinearInterpolate(VT, 0, 0.4 * (delta * 60))
+			VT = LerpTools:LinearInterpolate(VT, 0, 24)
 		end
 		-- VTT = LinearInterpolate(VTT, VT, 0.6 * (delta * 60))
 
 		if RelativeCameraDirection.X >= 0.8 then
-			VectorOne = LinearInterpolate(VectorOne, 10 * -RelativeCameraDirection.X, 0.4 * (delta * 60))
+			VectorOne = LerpTools:LinearInterpolate(VectorOne, 10 * -RelativeCameraDirection.X, 24)
 		elseif RelativeCameraDirection.X <= -0.8 then
-			VectorOne = LinearInterpolate(VectorOne, 10 * -RelativeCameraDirection.X, 0.4 * (delta * 60))
+			VectorOne = LerpTools:LinearInterpolate(VectorOne, 10 * -RelativeCameraDirection.X, 24)
 		elseif RelativeCameraDirection.X < 0.5 and RelativeCameraDirection.X > -0.5 then
-			VectorOne = LinearInterpolate(VectorOne, 0, 0.4 * (delta * 60))
+			VectorOne = LerpTools:LinearInterpolate(VectorOne, 0, 24)
 		end
-		VectorTwo = LinearInterpolate(VectorTwo, VectorOne, 0.9 * (delta * 60))
+		VectorTwo = LerpTools:LinearInterpolate(VectorTwo, VectorOne, 48)
 	else
 		-- VT = LinearInterpolate(VT, 10 * RelativeCameraDirection.X, 0.4 * (delta * 60))
 		-- * this is literally the only thing i know to make it work, sorry guys lol
-		VT = LinearInterpolate(VT, 0, 0.4 * (delta * 60))
-		VectorTwo = LinearInterpolate(VectorTwo, 0, 0.9 * (delta * 60))
+		VT = LerpTools:LinearInterpolate(VT, 0, 24)
+		VectorTwo = LerpTools:LinearInterpolate(VectorTwo, 0, 48)
 		Character.Humanoid.AutoRotate = true
 	end
 
