@@ -129,12 +129,12 @@ local function ServerRecieve(Player: Player, CameraCFrame: CFrame, ArmStates: Ar
 end
 
 if RunService:IsServer() then
-	ToServer = Link.CreateEvent("ToServer")
-	ToClient = Link.CreateEvent("ToClient")
+	ToServer = Link:CreateEvent("ToServer")
+	ToClient = Link:CreateEvent("ToClient")
 	ToServer.Event:Connect(ServerRecieve)
 elseif RunService:IsClient() then
-	ToServer = Link.WaitEvent("ToServer")
-	ToClient = Link.WaitEvent("ToClient")
+	ToServer = Link:WaitEvent("ToServer")
+	ToClient = Link:WaitEvent("ToClient")
 	ToClient.Event:Connect(ClientRecieve)
 	RunService:BindToRenderStep("PRISMA_main", Enum.RenderPriority.Last.Value + 50, Render)
 end
