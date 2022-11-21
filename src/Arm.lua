@@ -16,7 +16,7 @@ local RIGHT_SHOULDER_CFRAME = CFrame.new(
 	-- -1, 0, 0
 )
 
-return function(ArmStates: Array<boolean>, Player, RelativeCameraDirection: CFrame)
+return function(ArmStates: {[number]: boolean}, Player, RelativeCameraDirection: CFrame)
 	if ArmStates[1] and Player.Character.Torso:FindFirstChild("Left Shoulder") then
 		-- local Joint = Player.Character.Torso["Left Shoulder"]
 		-- Joint.C0 = LEFT_SHOULDER_CFRAME

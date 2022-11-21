@@ -14,7 +14,7 @@ local LegFragment = require(script.Leg)
 local ToServer, ToClient
 
 local PlayerCameraCFrames: { [Player]: CFrame } = {}
-local PlayerArmStates: { [Player]: Array<boolean> } = {}
+local PlayerArmStates: { [Player]: {[number]: boolean} } = {}
 
 local Prisma = {
 	MouseTracking = false;
@@ -50,7 +50,7 @@ local function ConvertToMouseDirection()
 
 	local Character = LocalPlayer.Character
 
-	local Head = Character:FindFirstChild("Head")
+	local Head: Part = Character:FindFirstChild("Head")
 	if not Head then
 		return CFrame.new()
 	end
@@ -58,10 +58,10 @@ local function ConvertToMouseDirection()
 	return Head.CFrame
 end
 
-local function RenderEverything(deltaTime, Player, CameraCFrame, ArmStates: Array<boolean>)
+local function RenderEverything(deltaTime, Player, CameraCFrame, ArmStates: {[number]: boolean})
 	-- Add checks here so fragments have 0 boilerplate
 	if Player.Parent == nil then
-		PlayerCameraCFrames[Player] = nil
+		PlayerCameraCFrames[Player] = nil :: CFrame
 		return false
 	end
 
@@ -119,13 +119,13 @@ local function Render(deltaTime)
 	end
 end
 
-local function ClientRecieve(Player: Player, CameraCFrame: CFrame, ArmStates: Array<boolean>)
+local function ClientRecieve(Player: Player, CameraCFrame: CFrame, ArmStates: {[number]: boolean})
 	PlayerCameraCFrames[Player] = CameraCFrame
 	PlayerArmStates[Player] = ArmStates
 end
 
-local function ServerRecieve(Player: Player, CameraCFrame: CFrame, ArmStates: Array<boolean>)
-	ToClient:FireSelectedClients({Player}, false, Player, CameraCFrame, ArmStates)
+local function ServerRecieve(Player: Player, CameraCFrame: CFrame, ArmStates: {[number]: boolean})
+	ToClient:FireClientsExcept({Player}, Player, CameraCFrame, ArmStates)
 end
 
 if RunService:IsServer() then

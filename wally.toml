@@ -1,8 +1,8 @@
 [package]
 name = "reimakesgames/prisma"
-version = "0.2.1"
+version = "0.2.2"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
-link = "reimakesgames/link@0.2.4"
+link = "reimakesgames/link@0.3.0"
